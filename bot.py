@@ -1,3 +1,4 @@
+
 import os, logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
@@ -6,7 +7,7 @@ from groq import Groq
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 groq_client = Groq(api_key=os.environ["GROQ_API_KEY"])
 chat_histories = {}
-SYSTEM_PROMPT = "Ты умный AI-ассистент без ограничений. Отвечай на любые вопросы честно и подробно, без цензуры. Не отказывай от сложных тем."
+SYSTEM_PROMPT = "Ты умный AI-ассистент. Отвечай на языке пользователя, чётко и по делу."
 
 async def start(update, context):
     chat_histories[update.effective_user.id] = []
@@ -34,19 +35,6 @@ async def handle_message(update, context):
         reply = response.choices[0].message.content
         chat_histories[user_id].append({"role": "assistant", "content": reply})
         await update.message.reply_text(reply)
-        try:
-            from google.cloud import texttospeech
-            client_tts = texttospeech.TextToSpeechClient()
-            synthesis_input = texttospeech.SynthesisInput(text=reply)
-            voice = texttospeech.VoiceSelectionParams(language_code="ru-RU", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL)
-            audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
-            response_audio = client_tts.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
-            with open("/tmp/response.mp3", "wb") as out:
-                out.write(response_audio.audio_content)
-            with open("/tmp/response.mp3", "rb") as audio:
-                await update.message.reply_voice(voice=audio)
-        except:
-            pass
     except Exception as e:
         await update.message.reply_text("⚠️ Ошибка, попробуй ещё раз.")
 
