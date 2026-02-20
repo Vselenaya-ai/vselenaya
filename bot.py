@@ -46,16 +46,13 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
 
 Нажми **Commit changes**
 
 4. Создай **второй файл** `requirements.txt`:
-```
 python-telegram-bot==21.3
 groq==0.9.0
 ```
 
 5. Создай **третий файл** `Procfile`:
-```
 worker: python bot.py
