@@ -10,7 +10,7 @@ SYSTEM_PROMPT = "Ты умный AI-ассистент. Отвечай на яз
 
 async def start(update, context):
     chat_histories[update.effective_user.id] = []
-    await update.message.reply_text("👋 Привет! Я AI-бот. Задай любой вопрос!\n\n/clear — очистить историю")
+    await update.message.reply_text("👋 Привет! Я Твоя Вселенная. Задай любой вопрос!\n\n/clear — очистить историю")
 
 async def clear(update, context):
     chat_histories[update.effective_user.id] = []
@@ -46,13 +46,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-Нажми **Commit changes**
-
-4. Создай **второй файл** `requirements.txt`:
-python-telegram-bot==21.3
-groq==0.9.0
-```
-
-5. Создай **третий файл** `Procfile`:
-worker: python bot.py
