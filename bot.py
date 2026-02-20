@@ -1,10 +1,10 @@
 import os, logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-from anthropic import Anthropic
+from groq import Groq
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
-client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+groq_client = Groq(api_key=os.environ["GROQ_API_KEY"])
 chat_histories = {}
 SYSTEM_PROMPT = "Ты умный AI-ассистент. Отвечай на языке пользователя, чётко и по делу."
 
@@ -25,13 +25,13 @@ async def handle_message(update, context):
         chat_histories[user_id] = chat_histories[user_id][-20:]
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
     try:
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}, *chat_histories[user_id]],
             max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            messages=chat_histories[user_id]
+            temperature=0.7
         )
-        reply = response.content[0].text
+        reply = response.choices[0].message.content
         chat_histories[user_id].append({"role": "assistant", "content": reply})
         await update.message.reply_text(reply)
     except Exception as e:
